@@ -94,6 +94,7 @@ def getDistrictID(st_id, lookout_district):
         return (district_id)
     except Exception as e:
         print(e)
+        return 733 #NEEDS IMMEDIATE ATTENTION
 def pingCOWIN(date,district_id):
     """
     Function to ping the COWIN API to get the latest district wise details
@@ -149,8 +150,11 @@ if __name__ == "__main__":
     settings["userAge"] = int(input("What is your Age ? : "))
     settings["pincode"] = int(input("What is your Pincode ? (Enter your home pincode or the pincode of the vaccination center from where you wish to get vaccinated): "))
     dist,st=pincodeToStateDistrictConverter(settings["pincode"])
+    print(dist,st)
     stateid=getStateID(st)
+    print(stateid)
     distid=getDistrictID(stateid,dist)
+    print(distid)
     centers=pingCOWIN(getDate(settings["daysLeftforDose2"]),distid)
     available,count=checkAvailability(centers,settings["userAge"])
     # centerNames,_ = getAvailableNames(centers,settings['userAge'])
@@ -160,13 +164,15 @@ if __name__ == "__main__":
     time.sleep(2)
     for i in range(len(available.keys())):
         print("A "+available[i]['fee_type']+" Center Named "+available[i]['name']+" at address "+available[i]['address']+" is available from "+available[i]['from']+" to "+available[i]['to'])
-        print("Vaccine - "+available[i]['vaccine_fees'][0]["vaccine"]+" priced at Rs."+available[i]['vaccine_fees'][0]["fee"]+"(inclusive of all service charges and 5% GST,if applicable)")
+        if available[i]['fee_type'] == 'Paid':
+            print("Vaccine - "+available[i]['vaccine_fees'][0]["vaccine"]+" priced at Rs."+available[i]['vaccine_fees'][0]["fee"]+"(inclusive of all service charges and 5% GST,if applicable)")
         for j in range(len(available[i]['sessions'])):
             if available[i]['sessions'][j]['min_age_limit'] < settings["userAge"]:
                 print("Session ID - "+available[i]['sessions'][j]['session_id'])
                 print("Date - "+available[i]['sessions'][j]['date'])
                 print("Min. Age - "+str(available[i]['sessions'][j]['min_age_limit']))
-                # print("Vaccine Name - "+available[i]['sessions'][j]['vaccine'])
+                if available[i]['fee_type'] == 'Free':
+                    print("Vaccine Name - "+available[i]['sessions'][j]['vaccine'])
                 print("Quantity of 1st Dose Available is "+str(available[i]['sessions'][j]['available_capacity_dose1']))
                 print("Quantity of 2nd Dose Available is "+str(available[i]['sessions'][j]['available_capacity_dose2']))
                 print("Time Slots "+str(available[i]['sessions'][j]['slots']))
