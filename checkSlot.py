@@ -94,7 +94,7 @@ def getDistrictID(st_id, lookout_district):
         return (district_id)
     except Exception as e:
         print(e)
-        return 733 #NEEDS IMMEDIATE ATTENTION
+        #return 733 NEEDS IMMEDIATE ATTENTION
 def pingCOWIN(date,district_id):
     """
     Function to ping the COWIN API to get the latest district wise details
